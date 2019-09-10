@@ -43,6 +43,7 @@ def unifica():
 
 def main():
     stop_words = set(stopwords.words('portuguese'))
+    stop_words = set(stopwords.words('english'))
 
     for f in os.listdir('./data-utf8'):
         # print(f)
