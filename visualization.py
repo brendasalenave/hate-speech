@@ -1,6 +1,7 @@
 # %% Load required libraries
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
+import spacy
 import cufflinks as cf
 
 #%%
@@ -10,6 +11,8 @@ cf.set_config_file(offline=False, world_readable=True)
 class VIS():
     def __init__(self, df):
         self.df = df
+        self.nlp = spacy.load('pt_core_news_sm')
+
     
     def get_top_n_gram(self, corpus, n_gram,n=None):
         vec = CountVectorizer(ngram_range=(n_gram, n_gram)).fit(corpus)
@@ -27,7 +30,7 @@ class VIS():
         # df4.groupby('Tweets').sum()['count'].sort_values(ascending=False).iplot(
         #     kind='bar', yTitle='Count', linecolor='black', layout={'xaxis_title':"Words", 'yaxis_title':"Count", 'margin':{'l': 0, 'r': 0, 't': 0, 'b': 0},'xaxis': {'automargin': True}, 'yaxis': {'automargin': True}})
         df4.groupby('Tweets').sum()['count'].sort_values(ascending=False).iplot(
-           kind='bar', yTitle='Count', linecolor='black', layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'lightgray'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'lightgray'}})
+           kind='bar', yTitle='Count', linecolor='black', layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'ghostwhite'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'ghostwhite'}})
 
 
     def get_top_n_words(self, corpus, n=None):
@@ -44,7 +47,23 @@ class VIS():
         #     print(word, '\t',freq)
         df_12 = pd.DataFrame(common_words, columns = ['Tweets' , 'count'])
         df_12.groupby('Tweets').sum()['count'].sort_values(ascending=False).iplot(
-           kind='bar', yTitle='Count', linecolor='black', layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'lightgray'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'lightgray'}})
+           kind='bar', yTitle='Count', linecolor='black', layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'ghostwhite'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'ghostwhite'}})
         
         #kind='bar', yTitle='Count', xTitle='Words',linecolor='black', margin=(0,0,400,0),layout={'margin':{'l': 0, 'r': 0, 't': 0, 'b': 0},'xaxis': {'automargin': True}, 'yaxis': {'automargin': True}})
+
+    def vis_pos(self):
+        tweets = list(self.df['Tweets'])
+        l_tweets = [l.split() for l in tweets]
+        flat_list = [item for sublist in l_tweets for item in sublist]
+        l_tweets = [[(token.orth_, token.lemma_,token.pos_) for token in self.nlp(s)] for s in flat_list]
+        flat_list = [item for sublist in l_tweets for item in sublist]
+        df_pos = pd.DataFrame.from_records(flat_list, columns =['Word', 'Lemma', 'POS']) 
+
+        pos_df = df_pos.POS.value_counts()[:20]
+        pos_df.iplot(
+            kind='bar',
+            xTitle='POS',
+            yTitle='Count',
+            layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'ghostwhite'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'ghostwhite'}})
+            #title='Top 20 Part-of-speech tagging for review corpus')
 

@@ -58,8 +58,22 @@ class Preprocess():
         return p.sub(' ',text) 
     
     def remove_laughs(self,text):
-        p = re.compile(r'kk+')
-        return p.sub('',text)
+        text = ' ' + text + ' '
+        text = re.sub(r'\s(kkkkkkkkk)\s',' ', text)
+        p = re.compile(r'\s(kk+)\s|\s(kkkkkkkkk)\s')
+        text = p.sub(' ',text)
+        p = re.compile(r'\s(kakkakakakkak)\s|\s(k+a+)+\s')
+        text = p.sub(' ',text)
+        p = re.compile(r'\s([hah?]{2,}|[heh?]{2,}|[hih?]{2,}|[hoh?]{2,}|[huh?]{2,})\s')
+        text = p.sub(' ',text)
+        p = re.compile(r'\s([hua]{2,}|[hue]{2,})\s')
+        text = p.sub(' ',text)
+        # p = re.compile(r'kk+')
+        # text = p.sub(' ',text)
+        return text
+
+    def remove_lengh_one_word(self, text):
+        return ' '.join([w for w in text.split() if len(w)>1])
         
     def replace_multiple_spaces(self, text):
         return ' '.join(text.split())
@@ -76,11 +90,12 @@ class Preprocess():
         text = self.links_removal(text)
         text = self.accents_removal(text)
         text = self.hashtag_removal(text)
-        text = self.remove_laughs(text)
         text = self.mentions_removal(text)
         if self.flag:
             text = self.stopwords_removal(text)
         text = self.punctuation_removal(text)
+        text = self.remove_laughs(text)
+        text = self.remove_lengh_one_word(text)
         text = self.replace_multiple_spaces(text)
         return text
 
