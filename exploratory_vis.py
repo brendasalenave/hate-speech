@@ -3,12 +3,14 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 import spacy
 import cufflinks as cf
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 #%%
 cf.go_offline()
 cf.set_config_file(offline=False, world_readable=True)
 
-class VIS():
+class Exploratory():
     def __init__(self, df):
         self.df = df
         self.nlp = spacy.load('pt_core_news_sm')
@@ -67,3 +69,17 @@ class VIS():
             layout={'paper_bgcolor':'rgba(0,0,0,0)', 'plot_bgcolor':'rgba(0,0,0,0)', 'xaxis': {'automargin': True, 'gridcolor':'ghostwhite'}, 'yaxis': {'automargin': True, 'title':'Count', 'gridcolor':'ghostwhite'}})
             #title='Top 20 Part-of-speech tagging for review corpus')
 
+    def vis_wordcloud(self):
+        text = " ".join(review for review in self.df.Tweets)
+        print ("There are {} words in the combination of all review.".format(len(text)))
+        # Create and generate a word cloud image:
+        wordcloud = WordCloud(width=900, height=450,background_color='white').generate(text)
+
+        # Display the generated image:
+        plt.figure(figsize = (20,10))
+        plt.imshow(wordcloud, interpolation='bilinear',aspect='auto')
+        plt.axis("off")
+        
+        plt.show()
+        # Save the image in the img folder:
+        wordcloud.to_file("wordcloud.png")

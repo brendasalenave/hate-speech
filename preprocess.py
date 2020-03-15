@@ -24,7 +24,7 @@ class Preprocess():
         stop_words = set(stopwords.words('portuguese'))
         stop_words = stop_words.union(set(stopwords.words('english')))
         stop_words = stop_words.union(STOP_WORDS)
-        stop_words = stop_words.union(set(['ja','ate', 'vc','vcs','pra', 'ta','dia','ai','la','cara','gente','voce','sao']))
+        stop_words = stop_words.union(set(['ja','ate', 'vc','vcs','pra', 'ta','dia','ai','la','pq','cara','gente','voce','sao']))
         # print(type(stop_words))
         
         separator = ' '
@@ -59,14 +59,14 @@ class Preprocess():
     
     def remove_laughs(self,text):
         text = ' ' + text + ' '
-        text = re.sub(r'\s(kkkkkkkkk)\s',' ', text)
-        p = re.compile(r'\s(kk+)\s|\s(kkkkkkkkk)\s')
+        text = re.sub(r'(\s)(kkkkkkkkk)(\s)',' ', text)
+        p = re.compile(r'(\s)(kk+)(\s)')
         text = p.sub(' ',text)
-        p = re.compile(r'\s(kakkakakakkak)\s|\s(k+a+)+\s')
+        p = re.compile(r'(\s)(kakkakakakkak)\s|\s(k+a+)+(\s)')
         text = p.sub(' ',text)
-        p = re.compile(r'\s([hah?]{2,}|[heh?]{2,}|[hih?]{2,}|[hoh?]{2,}|[huh?]{2,})\s')
+        p = re.compile(r'(\s)([hah?]{2,}|[heh?]{2,}|[hih?]{2,}|[hoh?]{2,}|[huh?]{2,})(\s)')
         text = p.sub(' ',text)
-        p = re.compile(r'\s([hua]{2,}|[hue]{2,})\s')
+        p = re.compile(r'(\s)([hua]{2,}|[hue]{2,})(\s)')
         text = p.sub(' ',text)
         # p = re.compile(r'kk+')
         # text = p.sub(' ',text)
@@ -84,6 +84,8 @@ class Preprocess():
         p = re.compile(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)')
         return p.sub('',text)
 
+    def digits_removal(self, text):
+        return re.sub(r'(\d)+','',text)
 
     def preprocess_pipeline(self, text):
         text = self.to_lower(text)
@@ -94,6 +96,7 @@ class Preprocess():
         if self.flag:
             text = self.stopwords_removal(text)
         text = self.punctuation_removal(text)
+        text = self.digits_removal(text)
         text = self.remove_laughs(text)
         text = self.remove_lengh_one_word(text)
         text = self.replace_multiple_spaces(text)

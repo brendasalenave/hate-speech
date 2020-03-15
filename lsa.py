@@ -31,7 +31,7 @@ class LSA():
 
 
         # tfidf vectorizer of scikit learn
-        vectorizer = TfidfVectorizer(stop_words=self.stop_words,max_features=5000, max_df = 0.5, use_idf = True, ngram_range=(1,3))
+        vectorizer = TfidfVectorizer(stop_words=self.stop_words,max_features=10000, max_df = 0.5, use_idf = True, ngram_range=(1,3))
         X = vectorizer.fit_transform([x[0] for x in self.tweets])
         print(X.shape) # check shape of the document-term matrix
         terms = vectorizer.get_feature_names()
@@ -43,7 +43,7 @@ class LSA():
         self.clusters = km.labels_.tolist()
 
 
-        U, Sigma, VT = randomized_svd(X, n_components=10, n_iter=100,
+        U, Sigma, VT = randomized_svd(X, n_components=10, n_iter=500,
         random_state=122)
 
 
@@ -69,4 +69,8 @@ class LSA():
         s = 10, # size
         edgecolor='none'
         )
+        plt.savefig('lsa', dpi=None, facecolor='w', edgecolor='w',
+        orientation='portrait', papertype=None, format=None,
+        transparent=False, bbox_inches=None, pad_inches=0.1,
+        frameon=None, metadata=None)
         plt.show()
